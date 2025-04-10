@@ -8,21 +8,6 @@ This repository contains a series of data engineering projects that aim to demon
 
 ### Technologies Used:
 - **Python**: For scripting and data processing tasks.
-- **SQL**: For querying and managing structured data.
-
-  DATA_ENGINEERING_pROJECTS/
-├── Project_01_TMDB_Analysis/
-│   ├── data/
-│   ├── notebooks/
-│   ├── scripts/
-│   ├── visuals/
-│   └── README.md
-├── Project_02_<Next_Project>/
-│   ├── ...
-├── requirements.txt
-├── README.md  # Main README for repo
-└── .gitignore
-
 
 ## Projects List
 
