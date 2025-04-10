@@ -12,9 +12,7 @@ This repository contains a series of data engineering projects that aim to demon
 ## Projects List
 
 1. **Movie Data API Ingestion with Apache Airflow**
-   - **Description**: A pipeline that ingests movie data from a public API and stores it in an AWS RDS database.
-   - **Technologies**: Apache Airflow, Python, AWS RDS, REST API.
-   - **Details**: This project demonstrates how to use Airflow to schedule data ingestion tasks, fetch movie data from an external API, and load it into a relational database for analysis.
+  This project explores trends and performance metrics in the film industry using data extracted from The Movie Database (TMDb) API. It involves data extraction, cleaning, and analysis of 19 well-known movies to uncover insights about revenue, budget, profitability, and popularity. The analysis compares franchise and standalone films, evaluates director and actor performance, and uses visualizations to highlight key findings. The goal is to provide data-driven insights that can support strategic decisions in movie production and marketing.
 
 2. **Next Project**
 ## 
