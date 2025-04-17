@@ -73,20 +73,6 @@ cd <project_directory>
 
 
 
-### Testing the Functions
-You can test the functions by running the `06_test_queries.sql` script. This script includes queries for testing stock replenishment, order placement, and the reporting views:
-
-```bash
-psql -U <username> -f tests/06_test_queries.sql
-```
-
-### Cleanup (Optional)
-Once testing is done, you can run the `07_cleanup.sql` script to clean up the database and drop the tables, views, and functions:
-
-```bash
-psql -U <username> -f cleanup/07_cleanup.sql
-```
-
 ---
 
 ## 📊 Report Summaries
