@@ -70,42 +70,8 @@ cd <project_directory>
 * **PostgreSQL Installed:** Ensure you have PostgreSQL installed on your system.
 * **psql Command-Line Tool:** The `psql` command-line tool should be accessible in your system's PATH.
 
-## Setup Instructions
 
-### Create the Database
-Run the `01_create_database_and_schema.sql` script to create the database and schema, and define the necessary tables:
 
-```bash
-psql -U <username> -f setup/01_create_database_and_schema.sql
-```
-
-### Insert Sample Data
-Run the `02_insert_sample_data.sql` script to populate the `customers` and `products` tables with sample data:
-
-```bash
-psql -U <username> -f setup/02_insert_sample_data.sql
-```
-
-### Define Business Logic Functions
-Run the `03_business_logic_functions.sql` script to define the core business logic functions for placing orders and replenishing stock:
-
-```bash
-psql -U <username> -f operations/03_business_logic_functions.sql
-```
-
-### Create Reporting Views
-Run the `04_reporting_views.sql` script to create views that generate customer order summaries, low stock reports, and customer spending summaries:
-
-```bash
-psql -U <username> -f operations/04_reporting_views.sql
-```
-
-### Apply Optimizations and Indexing
-Run the `05_optimizations_and_indexing.sql` script to create indexes and apply query optimization techniques for improving database performance:
-
-```bash
-psql -U <username> -f operations/05_optimizations_and_indexing.sql
-```
 
 ### Testing the Functions
 You can test the functions by running the `06_test_queries.sql` script. This script includes queries for testing stock replenishment, order placement, and the reporting views:
