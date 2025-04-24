@@ -129,6 +129,10 @@ def extract_movie_data(spark, movie_ids, api_key):
     schema = create_movie_schema()
     return spark.createDataFrame(movies_data_rdd, schema=schema)
 
+def save_and_load_dataframe(df, spark, file_path=PARQUET_FILE):
+    """Saves the DataFrame to a Parquet file and loads it back."""
+    df.coalesce(1).write.mode("overwrite").parquet(file_path)
+    return spark.read.parquet(file_path)
 
 # ------------------ Main Workflow ------------------
 def main():
