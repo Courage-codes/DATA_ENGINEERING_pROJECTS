@@ -267,6 +267,73 @@ def reorder_columns(df, desired_order):
     """Reorders DataFrame columns to specified order."""
     return df.select(desired_order)
 
+# ------------------ KPI Calculation Module ------------------
+def calculate_kpis(df):
+    """Calculates key performance indicators (profit and ROI)."""
+    df = df.withColumn("profit", col("revenue_musd") - col("budget_musd"))
+    df = df.withColumn("roi", col("revenue_musd") / col("budget_musd"))
+    return df
+
+def rank_movies_spark(df, column, ascending=False, filter_col=None, filter_val=None):
+    """Ranks movies based on a specified column with optional filtering."""
+    if filter_col and filter_val:
+        filtered_df = df.filter(col(filter_col) >= filter_val)
+    else:
+        filtered_df = df
+    window_spec = Window.orderBy(F.desc(column) if not ascending else F.asc(column))
+    ranked_df = filtered_df.withColumn("rank", F.rank().over(window_spec))
+    return ranked_df.select("id", "title", column, "rank").limit(10)
+
+# Individual ranking functions
+def rank_highest_revenue(df):
+    """Ranks movies by highest revenue."""
+    print("Highest Revenue:")
+    rank_movies_spark(df, 'revenue_musd').show()
+
+def rank_highest_budget(df):
+    """Ranks movies by highest budget."""
+    print("\nHighest Budget:")
+    rank_movies_spark(df, 'budget_musd').show()
+
+def rank_highest_profit(df):
+    """Ranks movies by highest profit."""
+    print("\nHighest Profit:")
+    rank_movies_spark(df, 'profit').show()
+
+def rank_lowest_profit(df):
+    """Ranks movies by lowest profit."""
+    print("\nLowest Profit:")
+    rank_movies_spark(df, 'profit', ascending=True).show()
+
+def rank_highest_roi(df):
+    """Ranks movies by highest ROI with budget >= 10M."""
+    print("\nHighest ROI (Budget >= 10M):")
+    rank_movies_spark(df, 'roi', filter_col='budget_musd', filter_val=MIN_ROI_BUDGET).show()
+
+def rank_lowest_roi(df):
+    """Ranks movies by lowest ROI with budget >= 10M."""
+    print("\nLowest ROI (Budget >= 10M):")
+    rank_movies_spark(df, 'roi', ascending=True, filter_col='budget_musd', filter_val=MIN_ROI_BUDGET).show()
+
+def rank_most_voted(df):
+    """Ranks movies by highest vote count."""
+    print("\nMost Voted Movies:")
+    rank_movies_spark(df, 'vote_count').show()
+
+def rank_highest_rated(df):
+    """Ranks movies by highest rating with votes >= 10."""
+    print("\nHighest Rated Movies (Votes >= 10):")
+    rank_movies_spark(df, 'vote_average', filter_col='vote_count', filter_val=MIN_VOTE_COUNT).show()
+
+def rank_lowest_rated(df):
+    """Ranks movies by lowest rating with votes >= 10."""
+    print("\nLowest Rated Movies (Votes >= 10):")
+    rank_movies_spark(df, 'vote_average', ascending=True, filter_col='vote_count', filter_val=MIN_VOTE_COUNT).show()
+
+def rank_most_popular(df):
+    """Ranks movies by highest popularity."""
+    print("\nMost Popular Movies:")
+    rank_movies_spark(df, 'popularity').show()
 
 # ------------------ Main Workflow ------------------
 def main():
@@ -285,3 +352,36 @@ def main():
     # Data Extraction
     df = extract_movie_data(spark, movie_ids, api_key)
     df = save_and_load_dataframe(df, spark)
+
+    # Data Cleaning
+    df = drop_irrelevant_columns(df)
+    df = extract_nested_columns(df)
+    df = extract_cast_and_crew(df)
+    df = convert_column_types(df)
+    df = replace_zero_with_nan(df, ['budget', 'revenue', 'runtime'])
+    df = scale_budget_and_revenue(df)
+    df = adjust_vote_average(df)
+    df = replace_placeholders_with_nan(df, ['overview', 'tagline'])
+    df = clean_dataframe(df)
+
+    # Reorder columns
+    desired_order = [
+        'id', 'title', 'tagline', 'release_date', 'genres', 'belongs_to_collection',
+        'original_language', 'budget_musd', 'revenue_musd', 'production_companies',
+        'production_countries', 'vote_count', 'vote_average', 'popularity', 'runtime',
+        'overview', 'spoken_languages', 'poster_path', 'cast', 'cast_size', 'director', 'crew_size'
+    ]
+    df = reorder_columns(df, desired_order)
+
+    # KPI Calculations and Rankings
+    df = calculate_kpis(df)
+    rank_highest_revenue(df)
+    rank_highest_budget(df)
+    rank_highest_profit(df)
+    rank_lowest_profit(df)
+    rank_highest_roi(df)
+    rank_lowest_roi(df)
+    rank_most_voted(df)
+    rank_highest_rated(df)
+    rank_lowest_rated(df)
+    rank_most_popular(df)
