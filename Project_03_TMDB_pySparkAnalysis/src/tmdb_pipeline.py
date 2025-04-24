@@ -335,6 +335,60 @@ def rank_most_popular(df):
     print("\nMost Popular Movies:")
     rank_movies_spark(df, 'popularity').show()
 
+
+# Individual search functions
+def search_bruce_willis_scifi_action(df):
+    """Searches for Sci-Fi Action movies starring Bruce Willis."""
+    df = df.withColumn("genres_array", F.split(col("genres"), "\\|"))
+    print("\nSearch: Sci-Fi Action movies with Bruce Willis")
+    results = df.filter(
+        F.array_contains(col('genres_array'), 'Science Fiction') &
+        F.array_contains(col('genres_array'), 'Action') &
+        col('cast').contains('Bruce Willis')
+    ).orderBy(F.desc('vote_average'), F.desc('vote_count'))
+    results.select('title', 'genres', 'cast', 'vote_average', 'vote_count').show(truncate=False)
+
+def search_uma_thurman_tarantino(df):
+    """Searches for movies starring Uma Thurman directed by Quentin Tarantino."""
+    df = df.withColumn("genres_array", F.split(col("genres"), "\\|"))
+    print("\nSearch: Uma Thurman movies directed by Quentin Tarantino")
+    results = df.filter(
+        col('cast').contains('Uma Thurman') &
+        col('director').contains('Quentin Tarantino')
+    ).orderBy(F.asc('runtime'))
+    results.select('title', 'cast', 'director', 'runtime').show(truncate=False)
+
+# Franchise and standalone analysis functions
+def compare_franchise_standalone_metrics(df):
+    """Compares performance metrics of franchise vs. standalone movies."""
+    df = df.withColumn(
+        'franchise_status',
+        F.when(~F.isnan(col("belongs_to_collection")), F.lit('Franchise')).otherwise(F.lit('Standalone'))
+    )
+    metrics = ['revenue_musd', 'roi', 'budget_musd', 'popularity', 'vote_average']
+    agg_expressions = [F.mean(col(metric)).alias(f'{metric}_mean') for metric in metrics]
+    agg_expressions += [F.median(col(metric)).alias(f'{metric}_median') for metric in metrics]
+    print("\nFranchise vs. Standalone Movie Performance Comparison:")
+    comparison = df.groupBy('franchise_status').agg(*agg_expressions)
+    comparison.show()
+
+def analyze_franchise_performance(df):
+    """Analyzes performance of movie franchises."""
+    print("\nMost Successful Movie Franchises:")
+    performance = df.filter(col("belongs_to_collection") != "") \
+        .groupBy("belongs_to_collection") \
+        .agg(
+            F.count("id").alias("num_movies"),
+            F.sum("budget_musd").alias("total_budget"),
+            F.mean("budget_musd").alias("mean_budget"),
+            F.sum("revenue_musd").alias("total_revenue"),
+            F.mean("revenue_musd").alias("mean_revenue"),
+            F.mean("vote_average").alias("mean_rating")
+        ) \
+        .orderBy(F.desc("num_movies"), F.desc("total_revenue"))
+    performance.show()
+
+
 # ------------------ Main Workflow ------------------
 def main():
     """Orchestrates the movie data analysis workflow."""
@@ -385,3 +439,11 @@ def main():
     rank_highest_rated(df)
     rank_lowest_rated(df)
     rank_most_popular(df)
+
+     # Specific Searches
+    search_bruce_willis_scifi_action(df)
+    search_uma_thurman_tarantino(df)
+
+    # Franchise and Standalone Analysis
+    compare_franchise_standalone_metrics(df)
+    analyze_franchise_performance(df)
