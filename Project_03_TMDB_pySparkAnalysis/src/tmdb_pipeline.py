@@ -388,6 +388,94 @@ def analyze_franchise_performance(df):
         .orderBy(F.desc("num_movies"), F.desc("total_revenue"))
     performance.show()
 
+# ------------------ Visualization Module ------------------
+def plot_revenue_vs_budget(pandas_df):
+    """Plots a scatter plot of revenue vs. budget."""
+    plt.figure(figsize=(10, 6))
+    plt.scatter(pandas_df['budget_musd'], pandas_df['revenue_musd'], alpha=0.5, color=sns.color_palette("viridis", as_cmap=True)(0.5))
+    plt.title('Revenue vs. Budget Trends', fontsize=16)
+    plt.xlabel('Budget (Million USD)', fontsize=12)
+    plt.ylabel('Revenue (Million USD)', fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.show()
+
+def plot_roi_by_genre(pandas_df):
+    """Plots ROI distribution by individual genres."""
+    all_genres = []
+    for genre_str in pandas_df['genres'].dropna().unique():
+        all_genres.extend(genre_str.split('|'))
+    unique_genres = list(set(all_genres))
+    roi_data_all_genres = []
+    genre_labels = []
+    for genre in unique_genres:
+        genre_roi = pandas_df['roi'][pandas_df['genres'].str.contains(genre, na=False)].dropna()
+        roi_data_all_genres.extend(genre_roi.tolist())
+        genre_labels.extend([genre] * len(genre_roi))
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x=genre_labels, y=roi_data_all_genres, palette="husl")
+    plt.title('ROI Distribution by Individual Genres', fontsize=16)
+    plt.xlabel('Genre', fontsize=12)
+    plt.ylabel('Return on Investment (ROI)', fontsize=12)
+    plt.xticks(rotation=45, ha='right', fontsize=10)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.show()
+
+def plot_popularity_vs_rating(pandas_df):
+    """Plots a scatter plot of popularity vs. rating."""
+    plt.figure(figsize=(10, 6))
+    plt.scatter(pandas_df['popularity'], pandas_df['vote_average'], alpha=0.5, color=sns.color_palette("magma", as_cmap=True)(0.5))
+    plt.title('Popularity vs. Rating', fontsize=16)
+    plt.xlabel('Popularity', fontsize=12)
+    plt.ylabel('Average Rating', fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.show()
+
+def plot_yearly_box_office_trends(pandas_df):
+    """Plots yearly trends in box office performance."""
+    pandas_df['release_date'] = pandas_df['release_date'].astype('datetime64[ns]')
+    pandas_df['release_year'] = pandas_df['release_date'].dt.year
+    yearly_performance = pandas_df.groupby('release_year')['revenue_musd'].sum().reset_index()
+    plt.figure(figsize=(12, 6))
+    plt.plot(yearly_performance['release_year'], yearly_performance['revenue_musd'], marker='o', color=sns.color_palette("rocket", as_cmap=True)(0.5))
+    plt.title('Yearly Trends in Box Office Performance', fontsize=16)
+    plt.xlabel('Release Year', fontsize=12)
+    plt.ylabel('Total Revenue (Million USD)', fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.show()
+
+def plot_franchise_vs_standalone_revenue(pandas_df):
+    """Plots a boxplot comparing revenue of franchise vs. standalone movies."""
+    franchise_revenue = pandas_df[pandas_df['franchise_status'] == 'Franchise']['revenue_musd']
+    standalone_revenue = pandas_df[pandas_df['franchise_status'] == 'Standalone']['revenue_musd']
+    plt.figure(figsize=(8, 6))
+    plt.boxplot([franchise_revenue.dropna(), standalone_revenue.dropna()], labels=['Franchise', 'Standalone'],
+                patch_artist=True, boxprops=dict(facecolor=sns.color_palette("Set2")[0]),
+                medianprops=dict(color='black', linewidth=2))
+    plt.title('Comparison of Franchise vs. Standalone Success (Revenue)', fontsize=16)
+    plt.ylabel('Revenue (Million USD)', fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.show()
+
+def plot_franchise_vs_standalone_rating(pandas_df):
+    """Plots a boxplot comparing ratings of franchise vs. standalone movies."""
+    franchise_vote_average = pandas_df[pandas_df['franchise_status'] == 'Franchise']['vote_average']
+    standalone_vote_average = pandas_df[pandas_df['franchise_status'] == 'Standalone']['vote_average']
+    plt.figure(figsize=(8, 6))
+    plt.boxplot([franchise_vote_average.dropna(), standalone_vote_average.dropna()], labels=['Franchise', 'Standalone'],
+                patch_artist=True, boxprops=dict(facecolor=sns.color_palette("Set2")[0]),
+                medianprops=dict(color='black', linewidth=2))
+    plt.title('Comparison of Franchise vs. Standalone Success (Rating)', fontsize=16)
+    plt.ylabel('Average Rating', fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.show()
+
+
 
 # ------------------ Main Workflow ------------------
 def main():
@@ -447,3 +535,22 @@ def main():
     # Franchise and Standalone Analysis
     compare_franchise_standalone_metrics(df)
     analyze_franchise_performance(df)
+
+    # Visualizations
+    pandas_df = df.withColumn(
+        'franchise_status',
+        F.when(~F.isnan(col("belongs_to_collection")), F.lit('Franchise')).otherwise(F.lit('Standalone'))
+    ).toPandas()
+
+    plot_revenue_vs_budget(pandas_df)
+    plot_roi_by_genre(pandas_df)
+    plot_popularity_vs_rating(pandas_df)
+    plot_yearly_box_office_trends(pandas_df)
+    plot_franchise_vs_standalone_revenue(pandas_df)
+    plot_franchise_vs_standalone_rating(pandas_df)
+
+    # Stop Spark session
+    spark.stop()
+
+if __name__ == "__main__":
+    main()
