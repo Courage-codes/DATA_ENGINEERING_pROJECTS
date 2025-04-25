@@ -20,7 +20,7 @@ Key features include:
 ```
 Project_03_TMDB_pySparkAnalysis/
 ├── notebook/
-│   └── [Jupyter notebooks for exploratory analysis or documentation]
+│   └── analyze_movies.ipynb
 ├── README.md
 ├── src/
 │   ├── tmdb_pipeline.py        # Main script containing the analysis pipeline
