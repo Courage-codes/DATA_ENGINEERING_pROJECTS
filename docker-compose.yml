@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database service
+  postgres:
+    image: postgres:14
+    container_name: ecommerce-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}                # Database name from .env
+      POSTGRES_USER: ${POSTGRES_USER}            # Database user from .env
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}    # Database password from .env
+      POSTGRES_HOST_AUTH_METHOD: trust            # Disable password auth for dev (use with caution)
+    ports:
+      - "5433:5432"                               # Map container port 5432 to host 5433
+    volumes:
+      - postgres-data:/var/lib/postgresql/data   # Persist DB data
+      - ./postgres/postgres_setup.sql:/docker-entrypoint-initdb.d/postgres_setup.sql  
+        # Initialization SQL script executed once on first startup
+    networks:
+      - streaming-network                         # Custom network for inter-service communication
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]  # Health check command
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Data generator service producing fake ecommerce event CSV files
+  data-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: data-generator
+    container_name: data-generator
+    environment:
+      - PYTHONUNBUFFERED=1                        # Real-time logs without buffering
+    volumes:
+      - data-volume:/data                         # Shared volume for data files
+    command: ["python", "/generator/data_generator.py", "--output-dir", "/data/incoming", "--interval", "5", "--batch-size", "10"]
+    networks:
+      - streaming-network
+    depends_on:
+      postgres:
+        condition: service_healthy                # Wait for postgres to be healthy before starting
+
+  # File mover service to move CSV files from incoming to processing directory
+  file-mover:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: file-mover
+    container_name: file-mover
+    volumes:
+      - data-volume:/data                         # Shared volume for incoming and processing dirs
+    command: ["python", "/spark/file_mover.py"]
+    networks:
+      - streaming-network
+    depends_on:
+      - data-generator                            # Start after data generator
+
+  # Spark streaming service to process CSV files and write to PostgreSQL
+  spark-streaming:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: spark-streaming
+    container_name: spark-streaming
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST}            # From .env file
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PROCESSING_PATH=${PROCESSING_PATH}
+      - CHECKPOINT_PATH=${CHECKPOINT_PATH}
+    volumes:
+      - ./spark:/app                             # Spark application code
+      - data-volume:/data                        # Shared data volume
+      - checkpoint-volume:/checkpoints          # Spark checkpointing volume
+    command: ["python", "/app/spark_streaming_to_postgres.py"]
+    networks:
+      - streaming-network
+    depends_on:
+      - postgres
+      - file-mover
+
+# Define custom Docker network for all services
+networks:
+  streaming-network:
+    driver: bridge
+
+# Define persistent volumes to retain data and checkpoints outside container lifecycle
+volumes:
+  postgres-data:
+  data-volume:
+  checkpoint-volume:
+
