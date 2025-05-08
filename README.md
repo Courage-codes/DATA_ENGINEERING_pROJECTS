@@ -12,7 +12,7 @@ This system consists of the following components:
 - **PostgreSQL**: Database for storing validated heart rate records
 - **Dashboard** : Web-based visualization of heart rate data
 
-![Architecture Diagram](docs/architecture-diagram.png)
+![Architecture Diagram](systemArchitecture.png)
 
 ## Directory Structure
 
