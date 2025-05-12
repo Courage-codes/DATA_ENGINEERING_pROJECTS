@@ -10,10 +10,16 @@ import logging
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
-# Configure logging
+# Ensure log directory exists
+log_dir = '/app/logs'
+os.makedirs(log_dir, exist_ok=True)
+
+# Configure logging to file inside mounted volume
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename=os.path.join(log_dir, 'heart_rate_producer.log'),
+    filemode='a'  # Append mode
 )
 logger = logging.getLogger('heart_rate_producer')
 
@@ -22,13 +28,9 @@ class HeartRateProducer:
     
     def __init__(self):
         """Initialize the Kafka producer"""
-        # Get Kafka broker address from environment variable or use default
         kafka_broker = os.environ.get('KAFKA_BROKER', 'kafka:9092')
-        
-        # Initialize the producer with retry capabilities
         self.topic = os.environ.get('KAFKA_TOPIC', 'heartbeat-data')
         
-        # Keep trying to connect to Kafka until available
         connected = False
         retry_count = 0
         max_retries = 30
@@ -39,7 +41,7 @@ class HeartRateProducer:
                 self.producer = KafkaProducer(
                     bootstrap_servers=[kafka_broker],
                     value_serializer=lambda v: json.dumps(v).encode('utf-8'),
-                    acks='all',  # Wait for all replicas
+                    acks='all',
                     retries=5,
                     retry_backoff_ms=500
                 )
@@ -61,19 +63,14 @@ class HeartRateProducer:
     def send_message(self, data):
         """Send heart rate data to Kafka topic"""
         try:
-            # Use customer_id as the key for partitioning
             key = str(data['customer_id']).encode('utf-8')
-            
-            # Send message asynchronously
             future = self.producer.send(
                 self.topic, 
                 key=key,
                 value=data
             )
-            
-            # Block until the message is sent (or timeout)
             record_metadata = future.get(timeout=10)
-            logger.debug(f"Message sent to topic: {record_metadata.topic}, partition: {record_metadata.partition}, offset: {record_metadata.offset}")
+            logger.info(f"Message sent to topic: {record_metadata.topic}, partition: {record_metadata.partition}, offset: {record_metadata.offset}")
             return True
         except Exception as e:
             logger.error(f"Error sending message to Kafka: {e}")
@@ -86,7 +83,6 @@ class HeartRateProducer:
             logger.info("Kafka producer closed")
 
 if __name__ == "__main__":
-    # Test the producer
     producer = HeartRateProducer()
     test_data = {
         "customer_id": 1,

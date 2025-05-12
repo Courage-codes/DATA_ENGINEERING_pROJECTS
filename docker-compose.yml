@@ -68,6 +68,8 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
+    volumes:
+      - ./logs:/app/logs   # Bind mount local ./logs directory
 
   data-processor:
     build:
@@ -87,6 +89,8 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+    volumes:
+      - ./logs:/app/logs   # Bind mount local ./logs directory
 
   dashboard:
     build:
@@ -104,6 +108,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      - ./logs:/app/logs   # Bind mount local ./logs directory
 
 volumes:
   zookeeper-data:

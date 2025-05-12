@@ -11,10 +11,16 @@ from kafka import KafkaConsumer
 from kafka.errors import KafkaError
 from db_connector import DatabaseConnector
 
-# Configure logging
+# Ensure the log directory exists
+log_dir = '/app/logs'
+os.makedirs(log_dir, exist_ok=True)
+
+# Configure logging to file
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename=os.path.join(log_dir, 'heart_rate_consumer.log'),
+    filemode='a'  # Append mode
 )
 logger = logging.getLogger('heart_rate_consumer')
 
@@ -23,14 +29,12 @@ class HeartRateConsumer:
     
     def __init__(self):
         """Initialize the Kafka consumer"""
-        # Get Kafka broker address from environment variable or use default
         kafka_broker = os.environ.get('KAFKA_BROKER', 'kafka:9092')
         self.topic = os.environ.get('KAFKA_TOPIC', 'heartbeat-data')
         
         # Connect to database
         self.db = DatabaseConnector()
         
-        # Keep trying to connect to Kafka until available
         connected = False
         retry_count = 0
         max_retries = 30
@@ -47,12 +51,10 @@ class HeartRateConsumer:
                     auto_commit_interval_ms=5000
                 )
                 
-                # Check if topic exists, create if not
                 topics = self.consumer.topics()
                 if self.topic not in topics:
                     logger.warning(f"Topic {self.topic} does not exist. Will be created when producer sends messages.")
                 
-                # Subscribe to the topic
                 self.consumer.subscribe([self.topic])
                 connected = True
                 logger.info(f"Connected to Kafka broker at {kafka_broker}, subscribed to topic {self.topic}")
@@ -74,18 +76,14 @@ class HeartRateConsumer:
         Validate heart rate is within acceptable limits
         Returns True if valid, False otherwise
         """
-        # Heart rates below 40 or above 180 are considered outliers
         return 40 <= heart_rate <= 180
     
     def process_message(self, message):
         """Process a single message from Kafka"""
         try:
-            # Extract data from message
             data = message.value
             
-            # Validate heart rate
             if self.validate_heart_rate(data['heart_rate']):
-                # Store valid data in database
                 self.db.insert_heart_rate(
                     customer_id=data['customer_id'],
                     timestamp=data['timestamp'],
@@ -93,12 +91,11 @@ class HeartRateConsumer:
                 )
                 logger.info(f"Processed and stored valid heart rate: {data}")
             else:
-                # Log invalid heart rate
                 logger.warning(f"Invalid heart rate detected: {data}")
                 
             return True
         except Exception as e:
-            logger.error(f"Error processing message: {e}")
+            logger.error(f"Error processing message: {e}", exc_info=True)
             return False
     
     def start_consuming(self):
