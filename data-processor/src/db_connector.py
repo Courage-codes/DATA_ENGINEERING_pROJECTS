@@ -5,16 +5,30 @@ Handles connections and operations with PostgreSQL database
 """
 import os
 import time
+import logging
 import psycopg2
 from psycopg2 import sql
 from datetime import datetime
+
+# Ensure the log directory exists
+log_dir = '/app/logs'
+os.makedirs(log_dir, exist_ok=True)
+
+# Configure logging to file
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename=os.path.join(log_dir, 'database_connector.log'),
+    filemode='a'  # Append mode
+)
+
+logger = logging.getLogger('database_connector')
 
 class DatabaseConnector:
     """Connects to and interacts with PostgreSQL database"""
     
     def __init__(self):
         """Initialize the database connection"""
-        # Database connection parameters from environment variables
         self.db_params = {
             'host': os.environ.get('DB_HOST'),
             'port': os.environ.get('DB_PORT'),
@@ -22,70 +36,69 @@ class DatabaseConnector:
             'user': os.environ.get('DB_USER'),
             'password': os.environ.get('DB_PASSWORD')
         }
-        
-        # Connect to database with retry mechanism
+        self.conn = None
         self.connect_with_retry()
     
     def connect_with_retry(self, max_retries=10, retry_delay=5):
         """Attempt to connect to the database with retries"""
         retries = 0
-        
         while retries < max_retries:
             try:
                 self.conn = psycopg2.connect(**self.db_params)
                 self.conn.autocommit = True
-                print("Successfully connected to PostgreSQL database")
+                logger.info("Successfully connected to PostgreSQL database")
                 return True
             except psycopg2.OperationalError as e:
                 retries += 1
-                print(f"Database connection failed (attempt {retries}/{max_retries}): {e}")
+                logger.warning(f"Database connection failed (attempt {retries}/{max_retries}): {e}")
                 if retries < max_retries:
-                    print(f"Retrying in {retry_delay} seconds...")
+                    logger.info(f"Retrying in {retry_delay} seconds...")
                     time.sleep(retry_delay)
                 else:
-                    print("Maximum retry attempts reached. Could not connect to database.")
+                    logger.error("Maximum retry attempts reached. Could not connect to database.")
                     raise
     
     def insert_heart_rate(self, customer_id, timestamp, heart_rate):
-        """Insert a heart rate record into the database"""
+        """Insert or update a heart rate record into the database (UPSERT)"""
         try:
-            # Ensure connection is active
             if not self.is_connected():
+                logger.info("Database connection lost. Reconnecting...")
                 self.connect_with_retry()
                 
-            # Parse timestamp if it's a string
             if isinstance(timestamp, str):
                 timestamp = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
                 
-            # Create a cursor
             with self.conn.cursor() as cursor:
-                # SQL for inserting a heart rate record
-                insert_sql = sql.SQL("""
+                upsert_sql = sql.SQL("""
                     INSERT INTO heartbeats (customer_id, timestamp, heart_rate)
                     VALUES (%s, %s, %s)
+                    ON CONFLICT (customer_id, timestamp) DO UPDATE
+                    SET heart_rate = EXCLUDED.heart_rate
                     RETURNING id
                 """)
-                
-                # Execute the insert
-                cursor.execute(insert_sql, (customer_id, timestamp, heart_rate))
-                
-                # Get the inserted record ID
+                cursor.execute(upsert_sql, (customer_id, timestamp, heart_rate))
                 record_id = cursor.fetchone()[0]
-                
+                logger.info(f"Upserted heart rate record ID {record_id} for customer {customer_id}")
                 return record_id
         except Exception as e:
-            print(f"Error inserting heart rate record: {e}")
-            # Attempt to reconnect on failure
-            self.connect_with_retry()
-            return None
+            logger.error(f"Error upserting heart rate record: {e}", exc_info=True)
+            # Optional: retry once after reconnect
+            try:
+                self.connect_with_retry()
+                with self.conn.cursor() as cursor:
+                    cursor.execute(upsert_sql, (customer_id, timestamp, heart_rate))
+                    record_id = cursor.fetchone()[0]
+                    logger.info(f"Upserted heart rate record ID {record_id} after reconnect")
+                    return record_id
+            except Exception as e2:
+                logger.error(f"Retry failed: {e2}", exc_info=True)
+                return None
     
     def is_connected(self):
         """Check if database connection is still active"""
-        if not hasattr(self, 'conn'):
+        if not self.conn:
             return False
-            
         try:
-            # Try a simple query to check connection
             with self.conn.cursor() as cursor:
                 cursor.execute("SELECT 1")
                 return True
@@ -94,17 +107,16 @@ class DatabaseConnector:
     
     def close(self):
         """Close the database connection"""
-        if hasattr(self, 'conn') and self.conn:
+        if self.conn:
             self.conn.close()
-            print("Database connection closed")
+            logger.info("Database connection closed")
 
 if __name__ == "__main__":
-    # Test the database connector
     db = DatabaseConnector()
     record_id = db.insert_heart_rate(
         customer_id=1,
         timestamp=datetime.now(),
         heart_rate=75
     )
-    print(f"Inserted record with ID: {record_id}")
+    logger.info(f"Inserted record with ID: {record_id}")
     db.close()
