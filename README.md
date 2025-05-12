@@ -21,6 +21,11 @@ heart-beat-monitoring-system/
 ├── docker-compose.yml
 ├── README.md
 ├── systemArchitecture.png
+├── logs/
+│   ├── data_connector.log
+│   ├── dashboard.log
+│   ├── heart_rate_producer.log
+│   └── data_generator.log
 ├── schema/
 │   └── schema.sql
 ├── data-generator/
