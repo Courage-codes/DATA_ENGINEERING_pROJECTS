@@ -2,11 +2,11 @@
 
 A scalable, containerized data pipeline for processing e-commerce events in real-time using Apache Spark Structured Streaming and PostgreSQL.
 
-![System Architecture](docs/system_architecture.png)
+![System Architecture](docs/systemArchitecture.png)
 
 ## 📋 Overview
 
-This project implements a complete end-to-end data pipeline for processing e-commerce user interaction events in real-time. The system generates realistic e-commerce event data (product views, purchases, searches, etc.), processes it through Apache Spark Structured Streaming, and stores the results in PostgreSQL for analysis.
+This project implements a complete end-to-end data pipeline for real-time processing of e-commerce user interaction events. The system generates realistic e-commerce event data (product views, purchases, searches, etc.), processes it through Apache Spark Structured Streaming, and stores the results in PostgreSQL for analysis.
 
 ### Key Features
 
