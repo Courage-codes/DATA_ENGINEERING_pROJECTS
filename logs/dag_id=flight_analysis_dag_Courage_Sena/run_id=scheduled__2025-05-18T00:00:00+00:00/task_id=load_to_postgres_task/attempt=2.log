@@ -1,0 +1,37 @@
+[2025-05-19T08:53:10.723+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2025-05-19T08:53:10.913+0000] {taskinstance.py:2073} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: flight_analysis_dag_Courage_Sena.load_to_postgres_task scheduled__2025-05-18T00:00:00+00:00 [queued]>
+[2025-05-19T08:53:10.925+0000] {taskinstance.py:2073} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: flight_analysis_dag_Courage_Sena.load_to_postgres_task scheduled__2025-05-18T00:00:00+00:00 [queued]>
+[2025-05-19T08:53:10.925+0000] {taskinstance.py:2303} INFO - Starting attempt 2 of 2
+[2025-05-19T08:53:10.943+0000] {taskinstance.py:2327} INFO - Executing <Task(PythonOperator): load_to_postgres_task> on 2025-05-18 00:00:00+00:00
+[2025-05-19T08:53:10.953+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'flight_analysis_dag_Courage_Sena', 'load_to_postgres_task', 'scheduled__2025-05-18T00:00:00+00:00', '--job-id', '8', '--raw', '--subdir', 'DAGS_FOLDER/flight_analysis_dag.py', '--cfg-path', '/tmp/tmpgi2vb9dm']
+[2025-05-19T08:53:10.956+0000] {standard_task_runner.py:91} INFO - Job 8: Subtask load_to_postgres_task
+[2025-05-19T08:53:10.957+0000] {logging_mixin.py:188} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61 DeprecationWarning: This process (pid=554) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-05-19T08:53:10.958+0000] {standard_task_runner.py:63} INFO - Started process 556 to run task
+[2025-05-19T08:53:11.006+0000] {task_command.py:426} INFO - Running <TaskInstance: flight_analysis_dag_Courage_Sena.load_to_postgres_task scheduled__2025-05-18T00:00:00+00:00 [running]> on host 21c1d2d801ec
+[2025-05-19T08:53:11.110+0000] {taskinstance.py:2644} INFO - Exporting env vars: AIRFLOW_CTX_DAG_EMAIL='cl.kofisena@gmail.com' AIRFLOW_CTX_DAG_OWNER='***_admin' AIRFLOW_CTX_DAG_ID='flight_analysis_dag_Courage_Sena' AIRFLOW_CTX_TASK_ID='load_to_postgres_task' AIRFLOW_CTX_EXECUTION_DATE='2025-05-18T00:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-05-18T00:00:00+00:00'
+[2025-05-19T08:53:11.112+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2025-05-19T08:53:11.136+0000] {base.py:84} INFO - Using connection ID 'postgres_analytics_conn' for task execution.
+[2025-05-19T08:53:11.360+0000] {logging_mixin.py:188} WARNING - /opt/***/dags/flight_analysis_dag.py:128 FutureWarning: Passing literal json to 'read_json' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+[2025-05-19T08:53:11.675+0000] {logging_mixin.py:188} WARNING - /opt/***/dags/flight_analysis_dag.py:128 FutureWarning: Passing literal json to 'read_json' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+[2025-05-19T08:53:11.692+0000] {logging_mixin.py:188} WARNING - /opt/***/dags/flight_analysis_dag.py:128 FutureWarning: Passing literal json to 'read_json' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+[2025-05-19T08:53:11.707+0000] {logging_mixin.py:188} WARNING - /opt/***/dags/flight_analysis_dag.py:128 FutureWarning: Passing literal json to 'read_json' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+[2025-05-19T08:53:11.721+0000] {logging_mixin.py:188} WARNING - /opt/***/dags/flight_analysis_dag.py:128 FutureWarning: Passing literal json to 'read_json' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+[2025-05-19T08:53:11.724+0000] {load_data_postgres.py:41} INFO - Starting data loading into PostgreSQL database ***.
+[2025-05-19T08:53:11.770+0000] {load_data_postgres.py:65} INFO - Loading 57000 rows into staging table 'processed_flight_data_staging'.
+[2025-05-19T08:53:15.456+0000] {load_data_postgres.py:65} INFO - Loading 24 rows into staging table 'kpi_avg_fare_by_airline_staging'.
+[2025-05-19T08:53:15.486+0000] {load_data_postgres.py:65} INFO - Loading 3 rows into staging table 'kpi_seasonal_fare_variation_staging'.
+[2025-05-19T08:53:15.514+0000] {load_data_postgres.py:65} INFO - Loading 24 rows into staging table 'kpi_booking_count_by_airline_staging'.
+[2025-05-19T08:53:15.545+0000] {load_data_postgres.py:65} INFO - Loading 10 rows into staging table 'kpi_popular_routes_staging'.
+[2025-05-19T08:53:15.669+0000] {load_data_postgres.py:105} INFO - Upserting data into target table 'processed_flight_data'.
+[2025-05-19T08:53:18.827+0000] {load_data_postgres.py:105} INFO - Upserting data into target table 'kpi_avg_fare_by_airline'.
+[2025-05-19T08:53:18.828+0000] {load_data_postgres.py:105} INFO - Upserting data into target table 'kpi_seasonal_fare_variation'.
+[2025-05-19T08:53:18.829+0000] {load_data_postgres.py:105} INFO - Upserting data into target table 'kpi_booking_count_by_airline'.
+[2025-05-19T08:53:18.830+0000] {load_data_postgres.py:105} INFO - Upserting data into target table 'kpi_popular_routes'.
+[2025-05-19T08:53:19.028+0000] {load_data_postgres.py:117} INFO - All data loaded and merged successfully to PostgreSQL.
+[2025-05-19T08:53:19.028+0000] {flight_analysis_dag.py:140} INFO - Load to Postgres task completed successfully.
+[2025-05-19T08:53:19.045+0000] {python.py:237} INFO - Done. Returned value was: None
+[2025-05-19T08:53:19.046+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2025-05-19T08:53:19.064+0000] {taskinstance.py:1205} INFO - Marking task as SUCCESS. dag_id=flight_analysis_dag_Courage_Sena, task_id=load_to_postgres_task, execution_date=20250518T000000, start_date=20250519T085310, end_date=20250519T085319
+[2025-05-19T08:53:19.133+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2025-05-19T08:53:19.166+0000] {taskinstance.py:3482} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2025-05-19T08:53:19.173+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

@@ -1,0 +1,195 @@
+version: "3.8"
+
+# Common environment variables for Airflow services
+x-common-env: &common-env
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW__DATABASE__SQL_ALCHEMY_CONN}
+  AIRFLOW_UID: ${AIRFLOW_UID}
+  MYSQL_USER: ${MYSQL_USER}
+  MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  MYSQL_HOST_FOR_AIRFLOW: ${MYSQL_HOST_FOR_AIRFLOW}
+  MYSQL_PORT: ${MYSQL_PORT}
+  MYSQL_DATABASE: ${MYSQL_DATABASE}
+  POSTGRES_USER: ${POSTGRES_USER}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  POSTGRES_HOST_FOR_AIRFLOW: ${POSTGRES_HOST_FOR_AIRFLOW}
+  POSTGRES_PORT: ${POSTGRES_PORT}
+  POSTGRES_DB: ${POSTGRES_DB}
+  STAGING_TABLE_NAME: ${STAGING_TABLE_NAME}
+  RAW_DATA_FILE_PATH: ${RAW_DATA_FILE_PATH}
+
+  AIRFLOW__SMTP__SMTP_HOST: ${AIRFLOW__SMTP__SMTP_HOST}
+  AIRFLOW__SMTP__SMTP_STARTTLS: ${AIRFLOW__SMTP__SMTP_STARTTLS}
+  AIRFLOW__SMTP__SMTP_SSL: ${AIRFLOW__SMTP__SMTP_SSL}
+  AIRFLOW__SMTP__SMTP_USER: ${AIRFLOW__SMTP__SMTP_USER}
+  AIRFLOW__SMTP__SMTP_PASSWORD: ${AIRFLOW__SMTP__SMTP_PASSWORD}
+  AIRFLOW__SMTP__SMTP_PORT: ${AIRFLOW__SMTP__SMTP_PORT}
+  AIRFLOW__SMTP__SMTP_MAIL_FROM: ${AIRFLOW__SMTP__SMTP_MAIL_FROM}
+
+# Common volume mounts for Airflow services
+x-common-volumes: &common-volumes
+  - ./dags:/opt/airflow/dags
+  - ./scripts:/opt/airflow/scripts
+  - ./logs:/opt/airflow/logs
+  - ./plugins:/opt/airflow/plugins
+  - ./data:/opt/airflow/data
+
+services:
+  mysql_staging_db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/mysql_setup:/docker-entrypoint-initdb.d
+    ports:
+      - "${MYSQL_PORT_EXTERNAL}:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+
+  postgres_analytics_db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/postgres_setup:/docker-entrypoint-initdb.d
+    ports:
+      - "${POSTGRES_PORT_EXTERNAL}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      retries: 5
+
+  airflow_init_db:
+    image: ${AIRFLOW_IMAGE}
+    depends_on:
+      postgres_analytics_db:
+        condition: service_healthy
+    environment:
+      <<: *common-env
+    entrypoint: /bin/bash
+    command: -c "airflow db init"
+    volumes:
+      - ./scripts:/opt/airflow/scripts
+      - ./data:/opt/airflow/data
+    restart: "no"
+
+  airflow_init_connections:
+    image: ${AIRFLOW_IMAGE}
+    depends_on:
+      airflow_init_db:
+        condition: service_completed_successfully
+      postgres_analytics_db:
+        condition: service_healthy
+      mysql_staging_db:
+        condition: service_healthy
+    environment:
+      <<: *common-env
+    entrypoint: /bin/bash
+    command: /opt/airflow/scripts/init_connections.sh
+    volumes: *common-volumes
+    restart: "no"
+
+  airflow_scheduler:
+    image: ${AIRFLOW_IMAGE}
+    depends_on:
+      airflow_init_connections:
+        condition: service_completed_successfully
+      airflow_init_db:
+        condition: service_completed_successfully
+      postgres_analytics_db:
+        condition: service_healthy
+      mysql_staging_db:
+        condition: service_healthy
+    environment:
+      <<: *common-env
+      AIRFLOW__CORE__EXECUTOR: ${AIRFLOW__CORE__EXECUTOR}
+      PYTHONPATH: /opt/airflow/dags:/opt/airflow/scripts
+    volumes: *common-volumes
+    command: scheduler
+    healthcheck:
+      test: ["CMD-SHELL", "airflow jobs check --job-type SchedulerJob --hostname \"$(hostname)\""]
+      interval: 10s
+      retries: 5
+    restart: unless-stopped
+
+  airflow_webserver:
+    image: ${AIRFLOW_IMAGE}
+    depends_on:
+      airflow_scheduler:
+        condition: service_healthy
+      postgres_analytics_db:
+        condition: service_healthy
+      mysql_staging_db:
+        condition: service_healthy
+    environment:
+      <<: *common-env
+      AIRFLOW__CORE__EXECUTOR: ${AIRFLOW__CORE__EXECUTOR}
+      PYTHONPATH: /opt/airflow/dags:/opt/airflow/scripts
+    ports:
+      - "${AIRFLOW_WEBSERVER_PORT}:8080"
+    volumes: *common-volumes
+    command: webserver
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8080/health || exit 1"]
+      interval: 10s
+      retries: 5
+    restart: unless-stopped
+
+  airflow_init_user:
+    image: ${AIRFLOW_IMAGE}
+    depends_on:
+      airflow_init_db:
+        condition: service_completed_successfully
+      postgres_analytics_db:
+        condition: service_healthy
+      mysql_staging_db:
+        condition: service_healthy
+    environment:
+      <<: *common-env
+      AIRFLOW__CORE__EXECUTOR: ${AIRFLOW__CORE__EXECUTOR}
+      AIRFLOW_ADMIN_USERNAME: ${AIRFLOW_ADMIN_USERNAME}
+      AIRFLOW_ADMIN_FIRSTNAME: ${AIRFLOW_ADMIN_FIRSTNAME}
+      AIRFLOW_ADMIN_LASTNAME: ${AIRFLOW_ADMIN_LASTNAME}
+      AIRFLOW_ADMIN_EMAIL: ${AIRFLOW_ADMIN_EMAIL}
+      AIRFLOW_ADMIN_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
+    volumes: *common-volumes
+    entrypoint: /bin/bash -c "airflow users create --username $AIRFLOW_ADMIN_USERNAME --firstname $AIRFLOW_ADMIN_FIRSTNAME --lastname $AIRFLOW_ADMIN_LASTNAME --role Admin --email $AIRFLOW_ADMIN_EMAIL --password $AIRFLOW_ADMIN_PASSWORD || echo 'User already exists'"
+    restart: "no"
+
+  airflow_test:
+    image: ${AIRFLOW_IMAGE}
+    depends_on:
+      postgres_analytics_db:
+        condition: service_healthy
+      mysql_staging_db:
+        condition: service_healthy
+    environment:
+      <<: *common-env
+      PYTHONPATH: /opt/airflow/dags:/opt/airflow/scripts
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./scripts:/opt/airflow/scripts
+      - ./tests:/opt/airflow/tests
+      - ./plugins:/opt/airflow/plugins
+      - ./data:/opt/airflow/data
+      - ./reports_test:/opt/airflow/reports_test
+    entrypoint: /bin/bash
+    command: -c "pip install pytest pytest-html pandas sqlalchemy mysql-connector-python psycopg2-binary && pytest /opt/airflow/tests --html=/opt/airflow/reports_test/report.html --self-contained-html"
+    restart: "no"
+
+volumes:
+  mysql_data:
+  postgres_data:
+  logs:
+  dags:
+  plugins:
+  scripts:
+  data:
