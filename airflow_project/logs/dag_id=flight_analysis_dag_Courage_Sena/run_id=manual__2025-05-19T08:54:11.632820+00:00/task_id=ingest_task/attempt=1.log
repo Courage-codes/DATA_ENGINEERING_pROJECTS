@@ -1,0 +1,80 @@
+[2025-05-19T08:54:13.818+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2025-05-19T08:54:14.056+0000] {taskinstance.py:2073} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: flight_analysis_dag_Courage_Sena.ingest_task manual__2025-05-19T08:54:11.632820+00:00 [queued]>
+[2025-05-19T08:54:14.068+0000] {taskinstance.py:2073} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: flight_analysis_dag_Courage_Sena.ingest_task manual__2025-05-19T08:54:11.632820+00:00 [queued]>
+[2025-05-19T08:54:14.069+0000] {taskinstance.py:2303} INFO - Starting attempt 1 of 2
+[2025-05-19T08:54:14.089+0000] {taskinstance.py:2327} INFO - Executing <Task(PythonOperator): ingest_task> on 2025-05-19 08:54:11.632820+00:00
+[2025-05-19T08:54:14.103+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'flight_analysis_dag_Courage_Sena', 'ingest_task', 'manual__2025-05-19T08:54:11.632820+00:00', '--job-id', '9', '--raw', '--subdir', 'DAGS_FOLDER/flight_analysis_dag.py', '--cfg-path', '/tmp/tmpa8o3iiin']
+[2025-05-19T08:54:14.106+0000] {logging_mixin.py:188} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61 DeprecationWarning: This process (pid=609) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-05-19T08:54:14.106+0000] {standard_task_runner.py:91} INFO - Job 9: Subtask ingest_task
+[2025-05-19T08:54:14.107+0000] {standard_task_runner.py:63} INFO - Started process 611 to run task
+[2025-05-19T08:54:14.166+0000] {task_command.py:426} INFO - Running <TaskInstance: flight_analysis_dag_Courage_Sena.ingest_task manual__2025-05-19T08:54:11.632820+00:00 [running]> on host 21c1d2d801ec
+[2025-05-19T08:54:14.295+0000] {taskinstance.py:2644} INFO - Exporting env vars: AIRFLOW_CTX_DAG_EMAIL='cl.kofisena@gmail.com' AIRFLOW_CTX_DAG_OWNER='***_admin' AIRFLOW_CTX_DAG_ID='flight_analysis_dag_Courage_Sena' AIRFLOW_CTX_TASK_ID='ingest_task' AIRFLOW_CTX_EXECUTION_DATE='2025-05-19T08:54:11.632820+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-19T08:54:11.632820+00:00'
+[2025-05-19T08:54:14.297+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2025-05-19T08:54:14.333+0000] {base.py:84} INFO - Using connection ID 'mysql_staging_conn' for task execution.
+[2025-05-19T08:54:14.333+0000] {ingest_data.py:27} INFO - Starting ingestion of /opt/***/data/Flight_Price_Dataset_of_Bangladesh.csv into MySQL table staging_db.raw_flight_data.
+[2025-05-19T08:54:14.799+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:15.482+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:15.778+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:15.991+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:16.144+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:16.287+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:16.563+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:16.747+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:16.897+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:17.167+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:17.403+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:17.665+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:17.923+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:18.105+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:18.239+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:18.362+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:18.487+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:18.628+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:18.773+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:18.923+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:19.145+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:19.541+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:19.718+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:19.856+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:20.110+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:20.299+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:20.473+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:20.707+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:20.876+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:21.213+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:21.393+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:21.658+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:21.816+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:21.944+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:22.211+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:22.590+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:22.817+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:22.991+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:23.395+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:23.624+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:23.762+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:23.893+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:24.327+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:24.587+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:24.825+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:24.990+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:25.224+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:25.420+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:25.594+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:25.919+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:26.275+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:26.613+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:26.853+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:27.153+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:27.379+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:27.533+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:27.676+0000] {ingest_data.py:52} INFO - Ingested chunk of 1000 rows into raw_flight_data.
+[2025-05-19T08:54:27.677+0000] {ingest_data.py:54} INFO - Successfully ingested total 57000 rows into MySQL table raw_flight_data.
+[2025-05-19T08:54:27.679+0000] {ingest_data.py:75} INFO - Database connection disposed.
+[2025-05-19T08:54:27.680+0000] {flight_analysis_dag.py:88} INFO - Ingest task completed successfully.
+[2025-05-19T08:54:27.680+0000] {python.py:237} INFO - Done. Returned value was: None
+[2025-05-19T08:54:27.681+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2025-05-19T08:54:27.692+0000] {taskinstance.py:1205} INFO - Marking task as SUCCESS. dag_id=flight_analysis_dag_Courage_Sena, task_id=ingest_task, execution_date=20250519T085411, start_date=20250519T085414, end_date=20250519T085427
+[2025-05-19T08:54:27.734+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2025-05-19T08:54:27.765+0000] {taskinstance.py:3482} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2025-05-19T08:54:27.769+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

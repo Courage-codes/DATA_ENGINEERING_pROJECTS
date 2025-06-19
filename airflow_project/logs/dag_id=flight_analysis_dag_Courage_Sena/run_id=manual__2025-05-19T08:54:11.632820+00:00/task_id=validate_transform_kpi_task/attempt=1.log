@@ -1,0 +1,31 @@
+[2025-05-19T08:54:28.953+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2025-05-19T08:54:29.236+0000] {taskinstance.py:2073} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: flight_analysis_dag_Courage_Sena.validate_transform_kpi_task manual__2025-05-19T08:54:11.632820+00:00 [queued]>
+[2025-05-19T08:54:29.250+0000] {taskinstance.py:2073} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: flight_analysis_dag_Courage_Sena.validate_transform_kpi_task manual__2025-05-19T08:54:11.632820+00:00 [queued]>
+[2025-05-19T08:54:29.251+0000] {taskinstance.py:2303} INFO - Starting attempt 1 of 2
+[2025-05-19T08:54:29.269+0000] {taskinstance.py:2327} INFO - Executing <Task(PythonOperator): validate_transform_kpi_task> on 2025-05-19 08:54:11.632820+00:00
+[2025-05-19T08:54:29.282+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'flight_analysis_dag_Courage_Sena', 'validate_transform_kpi_task', 'manual__2025-05-19T08:54:11.632820+00:00', '--job-id', '10', '--raw', '--subdir', 'DAGS_FOLDER/flight_analysis_dag.py', '--cfg-path', '/tmp/tmplh440_uj']
+[2025-05-19T08:54:29.286+0000] {standard_task_runner.py:91} INFO - Job 10: Subtask validate_transform_kpi_task
+[2025-05-19T08:54:29.289+0000] {logging_mixin.py:188} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61 DeprecationWarning: This process (pid=624) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-05-19T08:54:29.290+0000] {standard_task_runner.py:63} INFO - Started process 628 to run task
+[2025-05-19T08:54:29.346+0000] {task_command.py:426} INFO - Running <TaskInstance: flight_analysis_dag_Courage_Sena.validate_transform_kpi_task manual__2025-05-19T08:54:11.632820+00:00 [running]> on host 21c1d2d801ec
+[2025-05-19T08:54:29.471+0000] {taskinstance.py:2644} INFO - Exporting env vars: AIRFLOW_CTX_DAG_EMAIL='cl.kofisena@gmail.com' AIRFLOW_CTX_DAG_OWNER='***_admin' AIRFLOW_CTX_DAG_ID='flight_analysis_dag_Courage_Sena' AIRFLOW_CTX_TASK_ID='validate_transform_kpi_task' AIRFLOW_CTX_EXECUTION_DATE='2025-05-19T08:54:11.632820+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-19T08:54:11.632820+00:00'
+[2025-05-19T08:54:29.472+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2025-05-19T08:54:29.502+0000] {base.py:84} INFO - Using connection ID 'mysql_staging_conn' for task execution.
+[2025-05-19T08:54:29.502+0000] {validate_transform_kpi.py:34} INFO - Starting data validation and transformation from MySQL table staging_db.raw_flight_data.
+[2025-05-19T08:54:35.004+0000] {validate_transform_kpi.py:39} INFO - Read 171000 rows from MySQL table raw_flight_data.
+[2025-05-19T08:54:35.361+0000] {validate_transform_kpi.py:75} INFO - Dropped 0 rows due to missing/invalid values.
+[2025-05-19T08:54:35.461+0000] {validate_transform_kpi.py:80} INFO - Filtered out 0 rows with negative base or tax fares.
+[2025-05-19T08:54:35.885+0000] {validate_transform_kpi.py:88} INFO - Filtered out 0 rows with empty 'Airline' values.
+[2025-05-19T08:54:36.281+0000] {validate_transform_kpi.py:88} INFO - Filtered out 0 rows with empty 'Source' values.
+[2025-05-19T08:54:36.669+0000] {validate_transform_kpi.py:88} INFO - Filtered out 0 rows with empty 'Destination' values.
+[2025-05-19T08:54:37.154+0000] {validate_transform_kpi.py:93} INFO - Removed 114000 duplicate rows.
+[2025-05-19T08:54:37.155+0000] {validate_transform_kpi.py:97} WARNING - More than 50% of rows were dropped during validation.
+[2025-05-19T08:54:38.070+0000] {validate_transform_kpi.py:132} INFO - Successfully validated, transformed data and computed KPIs.
+[2025-05-19T08:54:38.071+0000] {validate_transform_kpi.py:133} INFO - Final processed data row count: 57000
+[2025-05-19T08:54:38.953+0000] {flight_analysis_dag.py:112} INFO - Validate and transform task completed successfully.
+[2025-05-19T08:54:38.985+0000] {python.py:237} INFO - Done. Returned value was: None
+[2025-05-19T08:54:38.987+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2025-05-19T08:54:39.003+0000] {taskinstance.py:1205} INFO - Marking task as SUCCESS. dag_id=flight_analysis_dag_Courage_Sena, task_id=validate_transform_kpi_task, execution_date=20250519T085411, start_date=20250519T085429, end_date=20250519T085439
+[2025-05-19T08:54:39.088+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2025-05-19T08:54:39.119+0000] {taskinstance.py:3482} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2025-05-19T08:54:39.126+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

@@ -1,0 +1,263 @@
+[2025-05-19T08:48:00.464+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2025-05-19T08:48:01.002+0000] {taskinstance.py:2073} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: flight_analysis_dag_Courage_Sena.load_to_postgres_task scheduled__2025-05-18T00:00:00+00:00 [queued]>
+[2025-05-19T08:48:01.031+0000] {taskinstance.py:2073} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: flight_analysis_dag_Courage_Sena.load_to_postgres_task scheduled__2025-05-18T00:00:00+00:00 [queued]>
+[2025-05-19T08:48:01.032+0000] {taskinstance.py:2303} INFO - Starting attempt 1 of 2
+[2025-05-19T08:48:01.067+0000] {taskinstance.py:2327} INFO - Executing <Task(PythonOperator): load_to_postgres_task> on 2025-05-18 00:00:00+00:00
+[2025-05-19T08:48:01.090+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'flight_analysis_dag_Courage_Sena', 'load_to_postgres_task', 'scheduled__2025-05-18T00:00:00+00:00', '--job-id', '7', '--raw', '--subdir', 'DAGS_FOLDER/flight_analysis_dag.py', '--cfg-path', '/tmp/tmpekqp8iwd']
+[2025-05-19T08:48:01.096+0000] {logging_mixin.py:188} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61 DeprecationWarning: This process (pid=312) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-05-19T08:48:01.097+0000] {standard_task_runner.py:91} INFO - Job 7: Subtask load_to_postgres_task
+[2025-05-19T08:48:01.097+0000] {standard_task_runner.py:63} INFO - Started process 317 to run task
+[2025-05-19T08:48:01.183+0000] {task_command.py:426} INFO - Running <TaskInstance: flight_analysis_dag_Courage_Sena.load_to_postgres_task scheduled__2025-05-18T00:00:00+00:00 [running]> on host 21c1d2d801ec
+[2025-05-19T08:48:01.310+0000] {taskinstance.py:2644} INFO - Exporting env vars: AIRFLOW_CTX_DAG_EMAIL='cl.kofisena@gmail.com' AIRFLOW_CTX_DAG_OWNER='***_admin' AIRFLOW_CTX_DAG_ID='flight_analysis_dag_Courage_Sena' AIRFLOW_CTX_TASK_ID='load_to_postgres_task' AIRFLOW_CTX_EXECUTION_DATE='2025-05-18T00:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-05-18T00:00:00+00:00'
+[2025-05-19T08:48:01.311+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2025-05-19T08:48:01.340+0000] {base.py:84} INFO - Using connection ID 'postgres_analytics_conn' for task execution.
+[2025-05-19T08:48:01.649+0000] {logging_mixin.py:188} WARNING - /opt/***/dags/flight_analysis_dag.py:128 FutureWarning: Passing literal json to 'read_json' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+[2025-05-19T08:48:02.093+0000] {logging_mixin.py:188} WARNING - /opt/***/dags/flight_analysis_dag.py:128 FutureWarning: Passing literal json to 'read_json' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+[2025-05-19T08:48:02.128+0000] {logging_mixin.py:188} WARNING - /opt/***/dags/flight_analysis_dag.py:128 FutureWarning: Passing literal json to 'read_json' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+[2025-05-19T08:48:02.164+0000] {logging_mixin.py:188} WARNING - /opt/***/dags/flight_analysis_dag.py:128 FutureWarning: Passing literal json to 'read_json' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+[2025-05-19T08:48:02.185+0000] {logging_mixin.py:188} WARNING - /opt/***/dags/flight_analysis_dag.py:128 FutureWarning: Passing literal json to 'read_json' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+[2025-05-19T08:48:02.191+0000] {load_data_postgres.py:41} INFO - Starting data loading into PostgreSQL database ***.
+[2025-05-19T08:48:02.229+0000] {load_data_postgres.py:65} INFO - Loading 57000 rows into staging table 'processed_flight_data_staging'.
+[2025-05-19T08:48:09.652+0000] {load_data_postgres.py:121} ERROR - An error occurred during data loading to PostgreSQL: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "pg_type_typname_nsp_index"
+DETAIL:  Key (typname, typnamespace)=(processed_flight_data_staging, 2200) already exists.
+
+[SQL: 
+CREATE TABLE processed_flight_data_staging (
+	"Airline" TEXT, 
+	"Source" TEXT, 
+	"Destination" TEXT, 
+	"Departure Date & Time" TIMESTAMP WITHOUT TIME ZONE, 
+	"Base Fare (BDT)" FLOAT(53), 
+	"Tax & Surcharge (BDT)" FLOAT(53), 
+	"Total Fare (BDT)" FLOAT(53), 
+	"Month" BIGINT, 
+	"Day" BIGINT, 
+	"Seasonality_Label" TEXT, 
+	"Route" TEXT
+)
+
+]
+(Background on this error at: https://sqlalche.me/e/14/gkpj)
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1910, in _execute_context
+    self.dialect.do_execute(
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "pg_type_typname_nsp_index"
+DETAIL:  Key (typname, typnamespace)=(processed_flight_data_staging, 2200) already exists.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/airflow/scripts/load_data_postgres.py", line 66, in load_data_to_postgres
+    df.to_sql(name=staging_table, con=conn, if_exists='replace', index=False, chunksize=1000)
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/util/_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/core/generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/io/sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/io/sql.py", line 1948, in to_sql
+    table = self.prep_table(
+            ^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/io/sql.py", line 1852, in prep_table
+    table.create()
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/io/sql.py", line 936, in create
+    self._execute_create()
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/io/sql.py", line 922, in _execute_create
+    self.table.create(bind=self.pd_sql.con)
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 962, in create
+    bind._run_ddl_visitor(ddl.SchemaGenerator, self, checkfirst=checkfirst)
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2221, in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/sql/visitors.py", line 524, in traverse_single
+    return meth(obj, **kw)
+           ^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/sql/ddl.py", line 899, in visit_table
+    self.connection.execute(
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1385, in execute
+    return meth(self, multiparams, params, _EMPTY_EXECUTION_OPTS)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/sql/ddl.py", line 80, in _execute_on_connection
+    return connection._execute_ddl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1477, in _execute_ddl
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1953, in _execute_context
+    self._handle_dbapi_exception(
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2134, in _handle_dbapi_exception
+    util.raise_(
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/util/compat.py", line 211, in raise_
+    raise exception
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1910, in _execute_context
+    self.dialect.do_execute(
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "pg_type_typname_nsp_index"
+DETAIL:  Key (typname, typnamespace)=(processed_flight_data_staging, 2200) already exists.
+
+[SQL: 
+CREATE TABLE processed_flight_data_staging (
+	"Airline" TEXT, 
+	"Source" TEXT, 
+	"Destination" TEXT, 
+	"Departure Date & Time" TIMESTAMP WITHOUT TIME ZONE, 
+	"Base Fare (BDT)" FLOAT(53), 
+	"Tax & Surcharge (BDT)" FLOAT(53), 
+	"Total Fare (BDT)" FLOAT(53), 
+	"Month" BIGINT, 
+	"Day" BIGINT, 
+	"Seasonality_Label" TEXT, 
+	"Route" TEXT
+)
+
+]
+(Background on this error at: https://sqlalche.me/e/14/gkpj)
+[2025-05-19T08:48:09.671+0000] {flight_analysis_dag.py:142} ERROR - Load to Postgres task failed: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "pg_type_typname_nsp_index"
+DETAIL:  Key (typname, typnamespace)=(processed_flight_data_staging, 2200) already exists.
+
+[SQL: 
+CREATE TABLE processed_flight_data_staging (
+	"Airline" TEXT, 
+	"Source" TEXT, 
+	"Destination" TEXT, 
+	"Departure Date & Time" TIMESTAMP WITHOUT TIME ZONE, 
+	"Base Fare (BDT)" FLOAT(53), 
+	"Tax & Surcharge (BDT)" FLOAT(53), 
+	"Total Fare (BDT)" FLOAT(53), 
+	"Month" BIGINT, 
+	"Day" BIGINT, 
+	"Seasonality_Label" TEXT, 
+	"Route" TEXT
+)
+
+]
+(Background on this error at: https://sqlalche.me/e/14/gkpj)
+[2025-05-19T08:48:09.671+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2025-05-19T08:48:09.672+0000] {taskinstance.py:2890} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1910, in _execute_context
+    self.dialect.do_execute(
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "pg_type_typname_nsp_index"
+DETAIL:  Key (typname, typnamespace)=(processed_flight_data_staging, 2200) already exists.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 465, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 400, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 235, in execute
+    return_value = self.execute_callable()
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 252, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/dags/flight_analysis_dag.py", line 132, in load_to_postgres_task_callable
+    load_data_to_postgres(
+  File "/opt/airflow/scripts/load_data_postgres.py", line 66, in load_data_to_postgres
+    df.to_sql(name=staging_table, con=conn, if_exists='replace', index=False, chunksize=1000)
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/util/_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/core/generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/io/sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/io/sql.py", line 1948, in to_sql
+    table = self.prep_table(
+            ^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/io/sql.py", line 1852, in prep_table
+    table.create()
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/io/sql.py", line 936, in create
+    self._execute_create()
+  File "/home/airflow/.local/lib/python3.12/site-packages/pandas/io/sql.py", line 922, in _execute_create
+    self.table.create(bind=self.pd_sql.con)
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 962, in create
+    bind._run_ddl_visitor(ddl.SchemaGenerator, self, checkfirst=checkfirst)
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2221, in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/sql/visitors.py", line 524, in traverse_single
+    return meth(obj, **kw)
+           ^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/sql/ddl.py", line 899, in visit_table
+    self.connection.execute(
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1385, in execute
+    return meth(self, multiparams, params, _EMPTY_EXECUTION_OPTS)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/sql/ddl.py", line 80, in _execute_on_connection
+    return connection._execute_ddl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1477, in _execute_ddl
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1953, in _execute_context
+    self._handle_dbapi_exception(
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2134, in _handle_dbapi_exception
+    util.raise_(
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/util/compat.py", line 211, in raise_
+    raise exception
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1910, in _execute_context
+    self.dialect.do_execute(
+  File "/home/airflow/.local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "pg_type_typname_nsp_index"
+DETAIL:  Key (typname, typnamespace)=(processed_flight_data_staging, 2200) already exists.
+
+[SQL: 
+CREATE TABLE processed_flight_data_staging (
+	"Airline" TEXT, 
+	"Source" TEXT, 
+	"Destination" TEXT, 
+	"Departure Date & Time" TIMESTAMP WITHOUT TIME ZONE, 
+	"Base Fare (BDT)" FLOAT(53), 
+	"Tax & Surcharge (BDT)" FLOAT(53), 
+	"Total Fare (BDT)" FLOAT(53), 
+	"Month" BIGINT, 
+	"Day" BIGINT, 
+	"Seasonality_Label" TEXT, 
+	"Route" TEXT
+)
+
+]
+(Background on this error at: https://sqlalche.me/e/14/gkpj)
+[2025-05-19T08:48:09.687+0000] {taskinstance.py:1205} INFO - Marking task as UP_FOR_RETRY. dag_id=flight_analysis_dag_Courage_Sena, task_id=load_to_postgres_task, execution_date=20250518T000000, start_date=20250519T084801, end_date=20250519T084809
+[2025-05-19T08:48:09.708+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 7 for task load_to_postgres_task ((psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "pg_type_typname_nsp_index"
+DETAIL:  Key (typname, typnamespace)=(processed_flight_data_staging, 2200) already exists.
+
+[SQL: 
+CREATE TABLE processed_flight_data_staging (
+	"Airline" TEXT, 
+	"Source" TEXT, 
+	"Destination" TEXT, 
+	"Departure Date & Time" TIMESTAMP WITHOUT TIME ZONE, 
+	"Base Fare (BDT)" FLOAT(53), 
+	"Tax & Surcharge (BDT)" FLOAT(53), 
+	"Total Fare (BDT)" FLOAT(53), 
+	"Month" BIGINT, 
+	"Day" BIGINT, 
+	"Seasonality_Label" TEXT, 
+	"Route" TEXT
+)
+
+]
+(Background on this error at: https://sqlalche.me/e/14/gkpj); 317)
+[2025-05-19T08:48:09.771+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 1
+[2025-05-19T08:48:09.799+0000] {taskinstance.py:3482} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2025-05-19T08:48:09.803+0000] {local_task_job_runner.py:222} INFO - ::endgroup::
